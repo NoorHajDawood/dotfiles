@@ -3,6 +3,10 @@ return {
   dependencies = { 'nvim-tree/nvim-web-devicons' },
   opts = {
     include_current_session = true,
+    grep = {
+      rg_opts = '--hidden --column --follow --line-number --no-heading '
+        .. "--color=always --smart-case -g '!{node_modules,.zig-cache,.git,**/_build,deps,.elixir_ls,**/target,**/assets/node_modules,**/assets/vendor,**/.next,**/.vercel,**/build,**/out}'",
+    },
   },
   keys = {
     {
