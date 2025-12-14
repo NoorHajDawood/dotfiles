@@ -126,3 +126,6 @@ function y() {
 	rm -f -- "$tmp"
 }
 
+mkcd () {
+    mkdir -p "$1" && cd "$1"
+}
