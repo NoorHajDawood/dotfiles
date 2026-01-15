@@ -85,6 +85,8 @@ export FZF_DEFAULT_OPTS="
 "
 export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap --bind '?:toggle-preview'"
 
+# Environment
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 
 # Aliases
 
