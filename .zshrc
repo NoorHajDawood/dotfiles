@@ -87,6 +87,7 @@ export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window down:3:hidden:wrap 
 
 # Environment
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+export _DMS_PATH_=dms-greeter
 
 # Aliases
 
