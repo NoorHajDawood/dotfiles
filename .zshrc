@@ -52,14 +52,7 @@ source ~/powerlevel10k/powerlevel10k.zsh-theme
 source <(fzf --zsh)
 eval "$(zoxide init zsh)"
 
-# Start ssh-agent and add keys automatically
-if [ -z "$SSH_AUTH_SOCK" ]; then
-  eval "$(ssh-agent -s)" > /dev/null
-fi
-
-if ! ssh-add -l &>/dev/null; then
-  ssh-add ~/.ssh/personal_ed25519 &>/dev/null
-fi
+export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.socket"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
