@@ -1,56 +1,14 @@
 return {
-  'rebelot/kanagawa.nvim',
-  lazy = false,
-  priority = 1000,
-  -- build = function ()
-  --     vim.cmd(':KanagaCompile')
-  -- end,
-  config = function()
-    require('kanagawa').setup {
-      compile = false, -- enable compiling the colorscheme
-      undercurl = true, -- enable undercurls
-      commentStyle = { italic = true },
-      functionStyle = {},
-      keywordStyle = { italic = true },
-      statementStyle = { bold = true },
-      typeStyle = {},
-      transparent = true, -- do not set background color
-      dimInactive = false, -- dim inactive window `:h hl-NormalNC`
-      terminalColors = true, -- define vim.g.terminal_color_{0,17}
-      colors = { -- add/modify theme and palette colors
-        palette = {},
-        theme = { wave = {}, lotus = {}, dragon = {}, all = {} },
-      },
-      overrides = function(colors) -- add/modify highlights
-        return {
-          ['@markup.link.url.markdown_inline'] = { link = 'Special' }, -- (url)
-          ['@markup.link.label.markdown_inline'] = { link = 'WarningMsg' }, -- [label]
-          ['@markup.italic.markdown_inline'] = { link = 'Exception' }, -- *italic*
-          ['@markup.raw.markdown_inline'] = { link = 'String' }, -- `code`
-          ['@markup.list.markdown'] = { link = 'Function' }, -- + list
-          ['@markup.quote.markdown'] = { link = 'Error' }, -- > blockcode
-          ['@markup.list.checked.markdown'] = { link = 'WarningMsg' }, -- - [X] checked list item
-        }
-      end,
-      theme = 'dragon', -- Load "wave" theme
-      -- background = { -- map the value of 'background' option to a theme
-      --   dark = 'dragon', -- try "dragon" !
-      --   light = 'lotus',
-      -- },
-    }
-
-    vim.cmd 'colorscheme kanagawa'
-
-    local bgTransparent = true
-    local toggleTransparent = function()
-      bgTransparent = not bgTransparent
-      require('kanagawa').setup {
-        transparent = bgTransparent,
-      }
-
-      vim.cmd 'colorscheme kanagawa'
-    end
-
-    vim.keymap.set('n', '<leader>bg', toggleTransparent, { noremap = true, silent = true })
-  end,
+    'folke/tokyonight.nvim',
+    lazy = false,
+    priority = 1000, -- Ensure it loads before other plugins
+    opts = {
+        style = 'night', -- "storm", "moon", "night", or "day"
+        transparent = true, -- Enable/disable background transparency
+        terminal_colors = true,
+    },
+    config = function(_, opts)
+        require('tokyonight').setup(opts)
+        vim.cmd.colorscheme 'tokyonight'
+    end,
 }
