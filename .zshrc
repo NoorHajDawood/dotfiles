@@ -54,6 +54,10 @@ eval "$(zoxide init zsh)"
 
 export SSH_AUTH_SOCK="${XDG_RUNTIME_DIR}/ssh-agent.socket"
 
+if ! ssh-add -l &>/dev/null; then
+  ssh-add ~/.ssh/personal_ed25519 &>/dev/null
+fi
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
