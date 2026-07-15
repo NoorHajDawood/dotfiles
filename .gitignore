@@ -1,0 +1,12 @@
+# Hyprland local backups
+.config/hypr/*.backup*
+
+# MPD runtime (config is tracked)
+.config/mpd/database
+.config/mpd/log
+.config/mpd/pid
+.config/mpd/state
+.config/mpd/sticker.sql
+
+# Stow migration leftovers
+*.pre-stow.*

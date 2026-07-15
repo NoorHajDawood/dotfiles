@@ -1,0 +1,20 @@
+#!/bin/bash
+
+SONG_FILE_PATH="${MUSIC_DIRECTORY}/$(rmpc song | jq -r '.file')"
+
+if [ -z "$SONG_FILE_PATH" ] || [ ! -f "$SONG_FILE_PATH" ]; then
+    zenity --error --title="Error" --text="Could not find a valid file to delete."
+    exit 1
+fi
+
+SKIP="${1:-false}"
+
+if [[ "$SKIP" == "true" ]]; then
+    rm "$SONG_FILE_PATH"
+    rmpc update
+    rmpc next
+elif zenity --question --default-cancel --ok-label="Yes" --cancel-label="No" --text="Are you sure you want to delete '$SONG_FILE_PATH'?" --title="Confirm Deletion"; then
+    rm "$SONG_FILE_PATH"
+    rmpc update
+    rmpc next
+fi
