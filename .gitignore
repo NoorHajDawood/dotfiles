@@ -1,6 +1,9 @@
 # Hyprland local backups
 .config/hypr/*.backup*
 
+# ArchX GPU overlay (machine-local)
+.config/hypr/env.d/gpu.conf
+
 # MPD runtime (config is tracked)
 .config/mpd/database
 .config/mpd/log
