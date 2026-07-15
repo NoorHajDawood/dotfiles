@@ -1,0 +1,10 @@
+[Unit]
+Description=Change wallpaper periodically
+
+[Timer]
+OnCalendar=*-*-* 07:00:00
+Persistent=true
+Unit=cycle-wallpaper.service
+
+[Install]
+WantedBy=timers.target

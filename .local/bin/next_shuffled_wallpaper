@@ -1,0 +1,61 @@
+#!/bin/bash
+
+WALLPAPER_DIRECTORY="${WALLPAPER_DIRECTORY:-$HOME/Pictures/Wallpapers}"
+SUPPORTED_FORMATS=("jpg" "jpeg" "png" "gif" "webp")
+
+STATE_DIR="$HOME/.cache/wallpaper-cycle"
+LIST_FILE="$STATE_DIR/list.txt"
+INDEX_FILE="$STATE_DIR/index"
+HASH_FILE="$STATE_DIR/hash"
+
+mkdir -p "$STATE_DIR"
+
+# Build find pattern dynamically
+FIND_PATTERN=()
+for format in "${SUPPORTED_FORMATS[@]}"; do
+	FIND_PATTERN+=(-iname "*.${format}" -o)
+done
+unset 'FIND_PATTERN[-1]' # remove trailing -o
+
+# Get sorted file list (stable input for hashing)
+mapfile -t FILES < <(
+	find "$WALLPAPER_DIRECTORY" -type f \( "${FIND_PATTERN[@]}" \) | sort
+)
+
+if [[ ${#FILES[@]} -eq 0 ]]; then
+	echo "No wallpapers found"
+	exit 1
+fi
+
+# Compute hash of current file set
+CURRENT_HASH=$(printf '%s\n' "${FILES[@]}" | sha256sum | cut -d' ' -f1)
+
+# Load previous hash (if any)
+PREVIOUS_HASH=""
+[[ -f "$HASH_FILE" ]] && PREVIOUS_HASH=$(<"$HASH_FILE")
+
+# Reshuffle if files changed or list missing
+if [[ "$CURRENT_HASH" != "$PREVIOUS_HASH" || ! -f "$LIST_FILE" ]]; then
+	printf '%s\n' "${FILES[@]}" | shuf >"$LIST_FILE"
+	echo 0 >"$INDEX_FILE"
+	echo "$CURRENT_HASH" >"$HASH_FILE"
+fi
+
+# Read shuffled list
+mapfile -t SHUFFLED <"$LIST_FILE"
+
+INDEX=0
+[[ -f "$INDEX_FILE" ]] && INDEX=$(<"$INDEX_FILE")
+
+# Wrap around
+if ((INDEX >= ${#SHUFFLED[@]})); then
+	INDEX=0
+fi
+
+WALLPAPER="${SHUFFLED[$INDEX]}"
+
+# Advance index for next run
+echo $((INDEX + 1)) >"$INDEX_FILE"
+
+# Apply wallpaper
+dms ipc call wallpaper set "$WALLPAPER"

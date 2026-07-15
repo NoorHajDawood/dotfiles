@@ -1,0 +1,7 @@
+[Unit]
+Description=Change wallpaper periodically
+
+[Service]
+Type=oneshot
+Environment=WALLPAPER_DIRECTORY=%h/Pictures/Wallpapers
+ExecStart=%h/.local/bin/next_shuffled_wallpaper

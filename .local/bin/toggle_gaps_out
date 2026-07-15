@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+DEFAULT_GAPS_OUT=5
+TARGET_ARG="bar"
+
+set_gaps() {
+	local gaps_value=$1
+	hyprctl keyword general:gaps_out "$gaps_value"
+}
+
+get_current_gaps() {
+	# Extract the number from the hyprctl output (e.g., "5 5 5 5")
+	hyprctl getoption general:gaps_out | awk '/custom type:/ {print $NF}'
+}
+
+# Check if the first argument ($1) is provided and equals "bar"
+if [[ -n "$1" ]] && [[ "$1" == "$TARGET_ARG" ]]; then
+	bar_status=$(dms ipc call bar status)
+
+	if [[ "$bar_status" == "visible" ]]; then
+		set_gaps "$DEFAULT_GAPS_OUT"
+	else
+		set_gaps 0
+	fi
+else
+	gaps_out_current=$(get_current_gaps)
+
+	if [[ "$gaps_out_current" -eq 0 ]]; then
+		set_gaps "$DEFAULT_GAPS_OUT"
+	else
+		set_gaps 0
+	fi
+fi

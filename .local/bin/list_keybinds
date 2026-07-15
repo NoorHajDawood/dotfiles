@@ -1,0 +1,70 @@
+#!/bin/bash
+
+HYPR_KEYBINDS="$HOME/.config/hypr/keybindings.conf"
+
+# Create temporary files
+TEMP_DISPLAY="/tmp/hypr_keybinds_display.txt"
+TEMP_COMMANDS="/tmp/hypr_keybinds_full.txt"
+
+# Build a list of keybinds and their commands/descriptions
+awk '
+  /^# ===/ {section=$0; next}
+  /^bind/ || /^bindel/ || /^bindl/ || /^bindmd/ || /^bindd/ || /^binde/ {
+    if (match($0, /# (.*)/, arr)) {
+      desc=arr[1]
+    } else {
+      desc="No description"
+    }
+    split($0, parts, ",")
+    gsub(/^bind(el|l|md|d|e)? = /, "", parts[1])
+    keycombo=parts[1]
+    if (length(parts) > 2) {
+      keycombo = keycombo " + " parts[2]
+    }
+    # Get the command part (after the third comma)
+    cmd=""
+    if (length(parts) > 3) {
+      for (i=3; i<=length(parts); i++) {
+        cmd = cmd (i>3 ? "," : "") parts[i]
+      }
+      gsub(/^ +| +$/, "", cmd)
+    }
+    # Clean display for user
+    display_text = sprintf("%-30s %s", keycombo, desc)
+    print display_text > "/tmp/hypr_keybinds_display.txt"
+    # Full command info for processing
+    print display_text "|||" cmd "|||" $0 > "/tmp/hypr_keybinds_full.txt"
+  }
+' "$HYPR_KEYBINDS"
+
+# Show clean display in rofi and get selection
+selected=$(rofi -dmenu -i -p "Hyprland Keybinds Manual" -width 100 -lines 30 < "$TEMP_DISPLAY")
+
+# If a selection was made, find and execute the command
+if [ -n "$selected" ]; then
+    # Get the full command line using the selection
+    full_line=$(grep "^$selected" "$TEMP_COMMANDS")
+    
+    if [ -n "$full_line" ]; then
+        # Extract the command part (between first and second |||)
+        command=$(echo "$full_line" | awk -F'\\|\\|\\|' '{print $2}')
+        
+        if [ -n "$command" ]; then
+            # Trim whitespace
+            command=$(echo "$command" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+            
+            # Execute the command
+            if [[ "$command" == *"exec"* ]]; then
+                # Extract and execute the command after 'exec,'
+                exec_cmd=$(echo "$command" | sed 's/.*exec,[[:space:]]*\(.*\)/\1/')
+                eval "$exec_cmd"
+            else
+                # For Hyprland internal commands
+                hyprctl dispatch "$command"
+            fi
+        fi
+    fi
+fi
+
+# Clean up temporary files
+rm -f "$TEMP_DISPLAY" "$TEMP_COMMANDS"
