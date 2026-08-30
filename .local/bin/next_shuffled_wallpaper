@@ -47,15 +47,32 @@ mapfile -t SHUFFLED <"$LIST_FILE"
 INDEX=0
 [[ -f "$INDEX_FILE" ]] && INDEX=$(<"$INDEX_FILE")
 
+if [ "$1" = "prev" ]; then
+	((INDEX--))
+else
+	if [[ -f "$INDEX_FILE" && "$CURRENT_HASH" == "$PREVIOUS_HASH" ]]; then
+		((INDEX++))
+	fi
+fi
+
 # Wrap around
 if ((INDEX >= ${#SHUFFLED[@]})); then
 	INDEX=0
+elif ((INDEX < 0)); then
+	((INDEX = ${#SHUFFLED[@]}-1))
 fi
 
 WALLPAPER="${SHUFFLED[$INDEX]}"
 
+if [[ ! -f "$WALLPAPER" ]]; then
+	echo "Selected wallpaper file missing: $WALLPAPER"
+	echo "Force-triggering a reshuffle on next execution..."
+	rm -f "$HASH_FILE"
+	exit 1
+fi
+
 # Advance index for next run
-echo $((INDEX + 1)) >"$INDEX_FILE"
+echo "$INDEX" >"$INDEX_FILE"
 
 # Apply wallpaper
 dms ipc call wallpaper set "$WALLPAPER"
