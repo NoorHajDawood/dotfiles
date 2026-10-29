@@ -1,1 +1,0 @@
--- Placeholder — ArchX overwrites env.d/gpu.conf with the selected GPU profile.

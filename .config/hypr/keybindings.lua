@@ -149,8 +149,6 @@ hl.bind(mod .. " + bracketright", hl.dsp.layout("preselect r"))
 
 -- === Sizing & Layout ===
 hl.bind(mod .. " + R", hl.dsp.layout("togglesplit"))
--- TODO: manual review on line 150 — resizeactive: expected 'X Y' or 'X% Y%', got "100%"
--- hl.bind(mod .. " + CTRL + F", hl.dsp.resizeactive("exact 100%"))
 
 -- === Move/resize windows with mainMod + LMB/RMB and dragging ===
 hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { description = "Move window" })
